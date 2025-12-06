@@ -16,6 +16,36 @@ int main(void)
 { // 主程序入口
 	HAL_Init();                       // 初始化HAL库
 	
+	// 配置系统时钟：外部振荡器8MHz，CPU时钟64MHz
+	RCC_OscInitTypeDef RCC_OscInitStruct = {0};  // 振荡器配置结构体
+	RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};  // 时钟配置结构体
+	
+	// 配置外部振荡器（HSE）8MHz
+	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE; // 使用外部高速振荡器
+	RCC_OscInitStruct.HSEState = RCC_HSE_ON;                   // 启用外部振荡器
+	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;               // 启用PLL
+	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;       // PLL源为外部振荡器
+	RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL8;               // PLL倍频因子8（8MHz × 8 = 64MHz）
+	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)       // 应用振荡器配置
+	{ // 振荡器配置失败
+		while (1)
+		{ // 死循环
+		}
+	}
+	
+	// 配置系统时钟源和分频器
+	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;  // 系统时钟源为PLL输出
+	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;          // AHB不分频（HCLK = 64MHz）
+	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;           // APB1分频系数为2（PCLK1 = 32MHz）
+	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;           // APB2不分频（PCLK2 = 64MHz）
+	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK) // 应用时钟配置
+	{ // 时钟配置失败
+		while (1)
+		{ // 死循环
+		}
+	}
+	
 	__GPIOB_CLK_ENABLE();             // 使能GPIOB时钟
 	GPIO_InitTypeDef GPIO_InitStructure;  // GPIO初始化结构体
 
