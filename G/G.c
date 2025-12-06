@@ -1,29 +1,11 @@
-/**
-  ******************************************************************************
-  * @file    FreeRTOS/FreeRTOS_ThreadCreation/Src/main.c
-  * @author  MCD Application Team
-  * @version V1.2.2
-  * @date    25-May-2015
-  * @brief   Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
-  *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at:
-  *
-  *        http://www.st.com/software_license_agreement_liberty_v2
-  *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  *
-  ******************************************************************************
-  */
+// 文件：FreeRTOS线程创建示例
+// 作者：MCD Application Team
+// 版本：V1.2.2
+// 日期：25-May-2015
+// 说明：FreeRTOS双线程LED控制主程序
+//
+// 版权所有 (c) 2015 STMicroelectronics
+// 基于 MCD-ST Liberty SW License Agreement V2 许可协议
 
 /* Includes ------------------------------------------------------------------*/
 #include <stm32f1xx_hal.h>
@@ -33,11 +15,11 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-osThreadId LEDThread1Handle, LEDThread2Handle;
+osThreadId LEDThread1Handle, LEDThread2Handle;  // LED线程句柄
 
 /* Private function prototypes -----------------------------------------------*/
-static void LED_Thread1(void const *argument);
-static void LED_Thread2(void const *argument);
+static void LED_Thread1(void const *argument);  // LED1线程函数声明
+static void LED_Thread2(void const *argument);  // LED2线程函数声明
 
 /* Private functions ---------------------------------------------------------*/
 
@@ -87,9 +69,9 @@ int main(void)
 }
 
 void SysTick_Handler(void)
-{
-	HAL_IncTick();
-	osSystickHandler();
+{ // SysTick中断处理函数
+	HAL_IncTick();                                  // HAL时基递增
+	osSystickHandler();                             // FreeRTOS系统节拍处理
 }
 
 /**
@@ -114,39 +96,26 @@ static void LED_Thread1(void const *argument)
 	}
 }
 
-/**
-  * @brief  Toggle LED2 thread
-  * @param  argument not used
-  * @retval None
-  */
 static void LED_Thread2(void const *argument)
-{
-	uint32_t count;
-	(void) argument;
+{ // LED2控制线程
+	uint32_t count;                                 // 计数变量（未使用）
+	(void) argument;                                // 未使用参数
   
 	for (;;)
-	{
-		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_9);
-		osDelay(200);
+	{ // 主循环
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_9);      // 翻转LED2状态
+		osDelay(200);                               // 延时200ms
 	}
 }
 
 #ifdef  USE_FULL_ASSERT
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
 void assert_failed(uint8_t* file, uint32_t line)
-{
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+{ // 断言失败处理函数，报告出错的文件名和行号
+	// 用户可自行实现错误报告，例如：
+	// printf("参数错误: 文件 %s 第 %d 行\r\n", file, line)
 
-  /* Infinite loop */
 	while (1)
-	{
+	{ // 死循环
 	}
 }
 #endif
